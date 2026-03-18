@@ -1,100 +1,242 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biki Valladolid Registro</title>
+    <title>Biki Control Pro</title>
     <style>
-        :root { --pucela: #800020; }
-        body { font-family: sans-serif; background: #f4f4f4; padding: 15px; color: #333; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
-        h2 { color: var(--pucela); text-align: center; margin-top: 0; }
-        label { display: block; margin: 15px 0 5px; font-weight: bold; }
-        select, input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        .btn-add { width: 100%; padding: 15px; background: var(--pucela); color: white; border: none; border-radius: 8px; margin-top: 20px; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .resumen { background: #fff4f4; border: 1px solid var(--pucela); padding: 15px; border-radius: 10px; margin: 20px 0; text-align: center; }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 10px; }
-        th, td { border-bottom: 1px solid #eee; padding: 10px; text-align: left; }
-        .btn-del { background: #888; color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 11px; margin-top: 20px; width: 100%; cursor: pointer; }
+        :root {
+            --pucela: #800020;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --text: #2d3436;
+            --accent-elec: #0984e3;
+            --accent-mec: #636e72;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            background: var(--card);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        header { text-align: center; margin-bottom: 25px; }
+        header h1 { margin: 0; color: var(--pucela); font-size: 22px; letter-spacing: -0.5px; }
+        header p { margin: 5px 0 0; font-size: 14px; color: #636e72; }
+
+        .wallet-card {
+            background: var(--pucela);
+            color: white;
+            padding: 20px;
+            border-radius: 18px;
+            text-align: center;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #800020 0%, #a50029 100%);
+            box-shadow: 0 4px 15px rgba(128, 0, 32, 0.3);
+        }
+
+        .wallet-card span { font-size: 13px; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
+        .wallet-card h2 { margin: 5px 0 0; font-size: 32px; font-weight: 700; }
+
+        .input-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #444; }
+        
+        select, input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #edf2f7;
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        select:focus, input:focus { border-color: var(--pucela); }
+
+        .btn-main {
+            width: 100%;
+            padding: 16px;
+            background: var(--pucela);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .btn-main:active { transform: scale(0.98); }
+
+        .history-title { 
+            margin-top: 30px; 
+            font-size: 16px; 
+            font-weight: 700; 
+            border-bottom: 2px solid #f1f1f1;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .list-container { margin-top: 10px; max-height: 250px; overflow-y: auto; }
+
+        .trip-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .trip-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 18px;
+        }
+
+        .icon-mec { background: #f1f2f6; color: var(--accent-mec); }
+        .icon-elec { background: #e3f2fd; color: var(--accent-elec); }
+
+        .trip-info { flex-grow: 1; }
+        .trip-info .date { font-size: 13px; font-weight: 600; }
+        .trip-info .details { font-size: 12px; color: #888; }
+
+        .trip-cost { font-weight: 700; color: var(--text); }
+
+        .btn-clear {
+            background: none;
+            border: none;
+            color: #b2bec3;
+            font-size: 11px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>🚲 Biki Valladolid</h2>
-    
-    <label>Tipo de Bici:</label>
-    <select id="tipo">
-        <option value="Mecánica">Mecánica (0.00€)</option>
-        <option value="Eléctrica">Eléctrica (0.10€/30min)</option>
-    </select>
+<div class="app-container">
+    <header>
+        <h1>BIKI Valladolid Pro</h1>
+        <p>Gestor de gastos personales</p>
+    </header>
 
-    <label>Tiempo (minutos):</label>
-    <input type="number" id="tiempo" value="20" min="1">
-
-    <button class="btn-add" onclick="guardar()">Registrar Trayecto</button>
-
-    <div class="resumen">
-        <small>RESERVA TOTAL MES:</small><br>
-        <strong style="font-size: 30px;" id="total">0.00€</strong>
+    <div class="wallet-card">
+        <span>Reserva necesaria (Mes)</span>
+        <h2 id="totalDisplay">0.00€</h2>
     </div>
 
-    <table id="tabla">
-        <thead>
-            <tr><th>Fecha</th><th>Bici</th><th>Min</th><th>Coste</th></tr>
-        </thead>
-        <tbody id="cuerpo"></tbody>
-    </table>
+    <div class="input-group">
+        <label>Tipo de Bicicleta</label>
+        <select id="tipo">
+            <option value="Mecánica">Mecánica (0.25€ / 30min)</option>
+            <option value="Eléctrica">Eléctrica (0.75€ / 30min)</option>
+        </select>
+    </div>
 
-    <button class="btn-del" onclick="borrar()">Borrar Historial del Mes</button>
+    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 12px;">
+        <div class="input-group">
+            <label>Fecha de uso</label>
+            <input type="date" id="fecha">
+        </div>
+        <div class="input-group">
+            <label>Minutos</label>
+            <input type="number" id="tiempo" value="20" min="1">
+        </div>
+    </div>
+
+    <button class="btn-main" onclick="addTrip()">Registrar Viaje</button>
+
+    <div class="history-title">
+        Historial
+        <button class="btn-clear" onclick="clearData()">Borrar todo</button>
+    </div>
+
+    <div class="list-container" id="history">
+        </div>
 </div>
 
 <script>
-    function guardar() {
+    // Inicializar fecha
+    document.getElementById('fecha').valueAsDate = new Date();
+
+    function addTrip() {
         const tipo = document.getElementById('tipo').value;
         const tiempo = parseInt(document.getElementById('tiempo').value);
-        const fecha = new Date().toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit'});
-        
-        let coste = 0;
-        if (tipo === "Eléctrica") {
-            // Se cobra 0.10€ por cada tramo de 30 minutos empezado
-            coste = Math.ceil(tiempo / 30) * 0.10;
-        }
+        const fecha = document.getElementById('fecha').value;
 
-        const viaje = { fecha, tipo, tiempo, coste };
-        let datos = JSON.parse(localStorage.getItem('biki_simple')) || [];
-        datos.unshift(viaje); // Pone el último viaje arriba
-        localStorage.setItem('biki_simple', JSON.stringify(datos));
-        mostrar();
+        if(!fecha || isNaN(tiempo)) return alert("Por favor, completa los datos.");
+
+        // Cálculo con las nuevas tarifas solicitadas
+        const precioTramo = (tipo === "Eléctrica") ? 0.75 : 0.25;
+        const coste = Math.ceil(tiempo / 30) * precioTramo;
+
+        const trip = { tipo, tiempo, fecha, coste, id: Date.now() };
+        
+        let data = JSON.parse(localStorage.getItem('biki_pro_v1')) || [];
+        data.unshift(trip);
+        localStorage.setItem('biki_pro_v1', JSON.stringify(data));
+        
+        render();
     }
 
-    function mostrar() {
-        const datos = JSON.parse(localStorage.getItem('biki_simple')) || [];
-        const cuerpo = document.getElementById('cuerpo');
+    function render() {
+        const history = document.getElementById('history');
+        const totalDisp = document.getElementById('totalDisplay');
+        let data = JSON.parse(localStorage.getItem('biki_pro_v1')) || [];
+        
         let total = 0;
-        cuerpo.innerHTML = "";
-        
-        datos.forEach(v => {
-            total += v.coste;
-            cuerpo.innerHTML += `<tr>
-                <td>${v.fecha}</td>
-                <td>${v.tipo === "Eléctrica" ? "⚡" : "⚙️"}</td>
-                <td>${v.tiempo}'</td>
-                <td>${v.coste.toFixed(2)}€</td>
-            </tr>`;
+        history.innerHTML = "";
+
+        data.forEach(t => {
+            total += t.coste;
+            const isElec = t.tipo === "Eléctrica";
+            const dateObj = new Date(t.fecha);
+            const formattedDate = dateObj.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+
+            history.innerHTML += `
+                <div class="trip-item">
+                    <div class="trip-icon ${isElec ? 'icon-elec' : 'icon-mec'}">
+                        ${isElec ? '⚡' : '⚙️'}
+                    </div>
+                    <div class="trip-info">
+                        <div class="date">${formattedDate}</div>
+                        <div class="details">${t.tipo} • ${t.tiempo} min</div>
+                    </div>
+                    <div class="trip-cost">+${t.coste.toFixed(2)}€</div>
+                </div>
+            `;
         });
-        document.getElementById('total').innerText = total.toFixed(2) + "€";
+
+        totalDisp.innerText = total.toFixed(2) + "€";
     }
 
-    function borrar() { 
-        if(confirm("¿Seguro que quieres borrar todos los datos?")) { 
-            localStorage.removeItem('biki_simple'); 
-            mostrar(); 
-        } 
+    function clearData() {
+        if(confirm("¿Deseas resetear el historial del mes?")) {
+            localStorage.removeItem('biki_pro_v1');
+            render();
+        }
     }
 
-    mostrar();
+    render();
 </script>
 
 </body>
