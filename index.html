@@ -1,1 +1,101 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biki Valladolid Registro</title>
+    <style>
+        :root { --pucela: #800020; }
+        body { font-family: sans-serif; background: #f4f4f4; padding: 15px; color: #333; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+        h2 { color: var(--pucela); text-align: center; margin-top: 0; }
+        label { display: block; margin: 15px 0 5px; font-weight: bold; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .btn-add { width: 100%; padding: 15px; background: var(--pucela); color: white; border: none; border-radius: 8px; margin-top: 20px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .resumen { background: #fff4f4; border: 1px solid var(--pucela); padding: 15px; border-radius: 10px; margin: 20px 0; text-align: center; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 10px; }
+        th, td { border-bottom: 1px solid #eee; padding: 10px; text-align: left; }
+        .btn-del { background: #888; color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 11px; margin-top: 20px; width: 100%; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>🚲 Biki Valladolid</h2>
+    
+    <label>Tipo de Bici:</label>
+    <select id="tipo">
+        <option value="Mecánica">Mecánica (0.00€)</option>
+        <option value="Eléctrica">Eléctrica (0.10€/30min)</option>
+    </select>
+
+    <label>Tiempo (minutos):</label>
+    <input type="number" id="tiempo" value="20" min="1">
+
+    <button class="btn-add" onclick="guardar()">Registrar Trayecto</button>
+
+    <div class="resumen">
+        <small>RESERVA TOTAL MES:</small><br>
+        <strong style="font-size: 30px;" id="total">0.00€</strong>
+    </div>
+
+    <table id="tabla">
+        <thead>
+            <tr><th>Fecha</th><th>Bici</th><th>Min</th><th>Coste</th></tr>
+        </thead>
+        <tbody id="cuerpo"></tbody>
+    </table>
+
+    <button class="btn-del" onclick="borrar()">Borrar Historial del Mes</button>
+</div>
+
+<script>
+    function guardar() {
+        const tipo = document.getElementById('tipo').value;
+        const tiempo = parseInt(document.getElementById('tiempo').value);
+        const fecha = new Date().toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit'});
+        
+        let coste = 0;
+        if (tipo === "Eléctrica") {
+            // Se cobra 0.10€ por cada tramo de 30 minutos empezado
+            coste = Math.ceil(tiempo / 30) * 0.10;
+        }
+
+        const viaje = { fecha, tipo, tiempo, coste };
+        let datos = JSON.parse(localStorage.getItem('biki_simple')) || [];
+        datos.unshift(viaje); // Pone el último viaje arriba
+        localStorage.setItem('biki_simple', JSON.stringify(datos));
+        mostrar();
+    }
+
+    function mostrar() {
+        const datos = JSON.parse(localStorage.getItem('biki_simple')) || [];
+        const cuerpo = document.getElementById('cuerpo');
+        let total = 0;
+        cuerpo.innerHTML = "";
+        
+        datos.forEach(v => {
+            total += v.coste;
+            cuerpo.innerHTML += `<tr>
+                <td>${v.fecha}</td>
+                <td>${v.tipo === "Eléctrica" ? "⚡" : "⚙️"}</td>
+                <td>${v.tiempo}'</td>
+                <td>${v.coste.toFixed(2)}€</td>
+            </tr>`;
+        });
+        document.getElementById('total').innerText = total.toFixed(2) + "€";
+    }
+
+    function borrar() { 
+        if(confirm("¿Seguro que quieres borrar todos los datos?")) { 
+            localStorage.removeItem('biki_simple'); 
+            mostrar(); 
+        } 
+    }
+
+    mostrar();
+</script>
+
+</body>
+</html>
